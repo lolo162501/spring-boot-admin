@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: qqqqqqqq
+      MYSQL_DATABASE: youlai_boot
+      MYSQL_USER: root
+      MYSQL_PASSWORD: qqqqqqqq
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - /home/allen/java_test/youlai-boot/sql/mysql8/database.sql:/docker-entrypoint-initdb.d/database.sql
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  app:
+    build: .
+    container_name: spring_app
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/youlai_boot
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: qqqqqqqq
+      SPRING_REDIS_HOST: redis
+
+volumes:
+  mysql_data:
